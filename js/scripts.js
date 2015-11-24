@@ -14,45 +14,6 @@
       var clearBeforeDraw = false;
 
            //neural net with one hidden layer; sigmoid for hidden, softmax for output
-      function nn(data, w12, bias2, w23, bias3) {
-        // just some incomplete sanity checks to find the most obvious errors
-        if (!Array.isArray(data) || data.length == 0 ||
-            !Array.isArray(w12) || w12.length == 0 || !Array.isArray(w12[0]) || data.length != w12[0].length || !Array.isArray(bias2) || bias2.length != w12.length ||
-            !Array.isArray(w23) || w23.length == 0 || !Array.isArray(w23[0]) || w12.length != w23[0].length || !Array.isArray(bias3) || bias3.length != w23.length) {
-            console.error('nn(): invalid parameters');
-            console.log('d: '+data.length+', w12: '+w12.length+', w12[0]: '+w12[0].length+', bias2: '+bias2.length+
-                        ', w23: '+w23.length+', w23[0]: '+w23[0].length+', bias3: '+bias3.length);
-            return undefined;
-        }
-        var t1 = new Date();
-        
-        // compute layer2 output
-        var out2 = [];
-        for (var i=0; i<w12.length; i++) {
-          out2[i] = bias2[i];
-          for (var j=0; j<w12[i].length; j++) {
-            out2[i] += data[j] * w12[i][j];
-          }
-          out2[i] = 1 / (1 + Math.exp(-out2[i]));
-        }
-        //compute layer3 activation
-        var out3 = [];
-        for (var i=0; i<w23.length; i++) {
-          out3[i] = bias3[i];
-          for (var j=0; j<w23[i].length; j++) {
-            out3[i] += out2[j] * w23[i][j];
-          }
-        }
-        // compute layer3 output (softmax)
-        var max3 = out3.reduce(function(p,c) { return p>c ? p : c; });
-        var nominators = out3.map(function(e) { return Math.exp(e - max3); });
-        var denominator = nominators.reduce(function (p, c) { return p + c; });
-        var output = nominators.map(function(e) { return e / denominator; });
-        
-        // timing measurement
-        var dt = new Date() - t1; console.log('NN time: '+dt+'ms');
-        return output;
-      }
 
       // computes center of mass of digit, for centering
       // note 1 stands for black (0 white) so we have to invert.
@@ -172,10 +133,12 @@
             }
             mean = (1 - mean / 100); // average and invert
             nnInput[x*28+y] = (mean - .5) / .5;
+
           }
         }
+        console.log(nnInput)
         
-        // for visualization/debugging: paint the input to the neural net.
+       // for visualization/debugging: paint the input to the neural net.
         if (document.getElementById('preprocessing').checked == true) {
           ctx.clearRect(0, 0, canvas.width, canvas.height);
           ctx.drawImage(copyCtx.canvas, 0, 0);
@@ -190,18 +153,22 @@
                 block.data[i+3] = 255;
               }
               ctx.putImageData(block, x * 10, y * 10);
+
             }
           }
         }
+
+        function nn(canvasInput){
+          console.log('nn')
+        };
         
         //for copy & pasting the digit into matlab
         //document.getElementById('nnInput').innerHTML=JSON.stringify(nnInput)+';<br><br><br><br>';
         var maxIndex = 0;
-        var nnOutput = nn(nnInput, w12, bias2, w23, bias3);
-        console.log(nnOutput);
-        nnOutput.reduce(function(p,c,i){if(p<c) {maxIndex=i; return c;} else return p;});
+        //var nnOutput = nn(nnInput, w12, bias2, w23, bias3)
+        //nnOutput.reduce(function(p,c,i){if(p<c) {maxIndex=i; return c;} else return p;});
         console.log('maxIndex: '+maxIndex);
-        document.getElementById('nnOut').innerHTML=maxIndex;
+       // document.getElementById('nnOut').innerHTML=maxIndex;
         clearBeforeDraw = true;
         var dt = new Date() - t1;
         console.log('recognize time: '+dt+'ms');

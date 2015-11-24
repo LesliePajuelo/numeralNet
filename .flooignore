@@ -6,3 +6,6 @@ extern/
 node_modules/
 tmp
 vendor/
+
+!/home/leslie/Desktop/soloWeek/assets/mnist_train.csv
+!/home/leslie/Desktop/soloWeek/assets/mnist_test.csv

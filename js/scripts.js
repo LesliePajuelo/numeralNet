@@ -1,6 +1,6 @@
 
   var canvas;
-      var ctx;
+      var context;
 
       var prevX = 0;
       var currX = 0;
@@ -13,7 +13,25 @@
 
       var clearBeforeDraw = false;
 
-           //neural net with one hidden layer; sigmoid for hidden, softmax for output
+      
+      function init() {
+          canvas = document.getElementById('canvas');
+          context = canvas.getContext("2d");
+
+          canvas.addEventListener("mousemove", function (e) {
+              findxy('move', e)
+          }, false);
+          canvas.addEventListener("mousedown", function (e) {
+              findxy('down', e)
+          }, false);
+          canvas.addEventListener("mouseup", function (e) {
+              findxy('up', e)
+          }, false);
+          canvas.addEventListener("mouseout", function (e) {
+              findxy('out', e)
+          }, false);
+      }
+
 
       // computes center of mass of digit, for centering
       // note 1 stands for black (0 white) so we have to invert.
@@ -33,7 +51,7 @@
         }
         meanX /= sumPixels;
         meanY /= sumPixels;
-        
+
         var dY = Math.round(rows/2 - meanY);
         var dX = Math.round(columns/2 - meanX);
         return {transX: dX, transY: dY};
@@ -81,46 +99,45 @@
             imgData.data[offset+3] = 255;
             // simply take red channel value. Not correct, but works for
             // black or white images.
-            grayscaleImg[y][x] = imgData.data[y*4*imgData.width + x*4 + 0] / 255;
+            grayscaleImg[y][x] = Math.abs(255-imgData.data[y*4*imgData.width + x*4 + 0]) / 255;
           }
         }
         return grayscaleImg;
       }
-
       // takes the image in the canvas, centers & resizes it, then puts into 10x10 px bins
       // to give a 28x28 grayscale image; then, computes class probability via neural network
       function recognize() {
         var t1 = new Date();
-        
-        // convert RGBA image to a grayscale array, then compute bounding rectangle and center of mass  
-        var imgData = ctx.getImageData(0, 0, 280, 280);
+
+        // convert RGBA image to a grayscale array, then compute bounding rectangle and center of mass
+        var imgData = context.getImageData(0, 0, 280, 280);
         grayscaleImg = imageDataToGrayscale(imgData);
         var boundingRectangle = getBoundingRectangle(grayscaleImg, 0.01);
         var trans = centerImage(grayscaleImg); // [dX, dY] to center of mass
-        
+
         // copy image to hidden canvas, translate to center-of-mass, then
         // scale to fit into a 200x200 box (see MNIST calibration notes on
         // Yann LeCun's website)
         var canvasCopy = document.createElement("canvas");
         canvasCopy.width = imgData.width;
         canvasCopy.height = imgData.height;
-        var copyCtx = canvasCopy.getContext("2d");
+        var copycontext = canvasCopy.getContext("2d");
         var brW = boundingRectangle.maxX+1-boundingRectangle.minX;
         var brH = boundingRectangle.maxY+1-boundingRectangle.minY;
         var scaling = 190 / (brW>brH?brW:brH);
         // scale
-        copyCtx.translate(canvas.width/2, canvas.height/2);
-        copyCtx.scale(scaling, scaling);
-        copyCtx.translate(-canvas.width/2, -canvas.height/2);
+        copycontext.translate(canvas.width/2, canvas.height/2);
+        copycontext.scale(scaling, scaling);
+        copycontext.translate(-canvas.width/2, -canvas.height/2);
         // translate to center of mass
-        copyCtx.translate(trans.transX, trans.transY);
+        copycontext.translate(trans.transX, trans.transY);
 
-          copyCtx.drawImage(ctx.canvas, 0, 0);
-        
-          
-        
+          copycontext.drawImage(context.canvas, 0, 0);
+
+
+
         // now bin image into 10x10 blocks (giving a 28x28 image)
-        imgData = copyCtx.getImageData(0, 0, 280, 280);
+        imgData = copycontext.getImageData(0, 0, 280, 280);
         grayscaleImg = imageDataToGrayscale(imgData);
         var nnInput = new Array(784);
         for (var y = 0; y < 28; y++) {
@@ -131,20 +148,20 @@
                 mean += grayscaleImg[y*10 + v][x*10 + h];
               }
             }
-            mean = (1 - mean / 100); // average and invert
-            nnInput[x*28+y] = (mean - .5) / .5;
+            mean = (mean / 100); // average and invert
+            nnInput[x*28+y] = (mean);
 
           }
         }
         console.log(nnInput)
-        
+
        // for visualization/debugging: paint the input to the neural net.
         if (document.getElementById('preprocessing').checked == true) {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          ctx.drawImage(copyCtx.canvas, 0, 0);
+          context.clearRect(0, 0, canvas.width, canvas.height);
+          context.drawImage(copycontext.canvas, 0, 0);
           for (var y = 0; y < 28; y++) {
             for (var x = 0; x < 28; x++) {
-              var block = ctx.getImageData(x * 10, y * 10, 10, 10);
+              var block = context.getImageData(x * 10, y * 10, 10, 10);
               var newVal = 255 * (0.5 - nnInput[x*28+y]/2);
               for (var i = 0; i < 4 * 10 * 10; i+=4) {
                 block.data[i] = newVal;
@@ -152,7 +169,7 @@
                 block.data[i+2] = newVal;
                 block.data[i+3] = 255;
               }
-              ctx.putImageData(block, x * 10, y * 10);
+              context.putImageData(block, x * 10, y * 10);
 
             }
           }
@@ -161,7 +178,7 @@
         function nn(canvasInput){
           console.log('nn')
         };
-        
+
         //for copy & pasting the digit into matlab
         //document.getElementById('nnInput').innerHTML=JSON.stringify(nnInput)+';<br><br><br><br>';
         var maxIndex = 0;
@@ -173,53 +190,35 @@
         var dt = new Date() - t1;
         console.log('recognize time: '+dt+'ms');
       }
-          
-      function init() {
-          canvas = document.getElementById('canvas');
-          ctx = canvas.getContext("2d");
-
-          canvas.addEventListener("mousemove", function (e) {
-              findxy('move', e)
-          }, false);
-          canvas.addEventListener("mousedown", function (e) {
-              findxy('down', e)
-          }, false);
-          canvas.addEventListener("mouseup", function (e) {
-              findxy('up', e)
-          }, false);
-          canvas.addEventListener("mouseout", function (e) {
-              findxy('out', e)
-          }, false);
-      }
 
       // draws a line from (x1, y1) to (x2, y2) with nice rounded caps
-      function draw(ctx, color, lineWidth, x1, y1, x2, y2) {
-          ctx.beginPath();
-          ctx.strokeStyle = color;
-          ctx.lineWidth = lineWidth;
-          ctx.lineCap = 'round';
-          ctx.lineJoin = 'round';
-          ctx.moveTo(x1, y1);
-          ctx.lineTo(x2, y2);
-          ctx.stroke();
-          ctx.closePath();
+      function draw(context, color, lineWidth, x1, y1, x2, y2) {
+          context.beginPath();
+          context.strokeStyle = color;
+          context.lineWidth = lineWidth;
+          context.lineCap = 'round';
+          context.lineJoin = 'round';
+          context.moveTo(x1, y1);
+          context.lineTo(x2, y2);
+          context.stroke();
+          context.closePath();
       }
 
       function erase() {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          context.clearRect(0, 0, canvas.width, canvas.height);
           document.getElementById('nnOut').innerHTML = '';
       }
 
       function findxy(res, e) {
           if (res == 'down') {
               if (clearBeforeDraw == true) {
-                ctx.clearRect(0,0,canvas.width,canvas.height);
+                context.clearRect(0,0,canvas.width,canvas.height);
                 document.getElementById('nnInput').innerHTML='';
                 document.getElementById('nnOut').innerHTML='';
                 paths = [];
                 clearBeforeDraw = false;
               }
-              
+
               if (e.pageX != undefined && e.pageY != undefined) {
                 currX = e.pageX-canvas.offsetLeft;
                 currY = e.pageY-canvas.offsetTop;
@@ -232,13 +231,13 @@
                         - canvas.offsetTop;
               }
               //draw a circle
-              ctx.beginPath();
-              ctx.lineWidth = 1;
-              ctx.arc(currX,currY,lineWidth/2,0,2*Math.PI);
-              ctx.stroke();
-              ctx.closePath();
-              ctx.fill();
-              
+              context.beginPath();
+              context.lineWidth = 1;
+              context.arc(currX,currY,lineWidth/2,0,2*Math.PI);
+              context.stroke();
+              context.closePath();
+              context.fill();
+
               paths.push([[currX], [currY]]);
               paintFlag = true;
           }
@@ -246,7 +245,7 @@
               paintFlag = false;
               //console.log(paths);
           }
-          
+
           if (res == 'move') {
               if (paintFlag) {
                   // draw a line to previous point
@@ -267,9 +266,8 @@
                   currPath[0].push(currX);
                   currPath[1].push(currY);
                   paths[paths.length-1] = currPath;
-                  draw(ctx, color, lineWidth, prevX, prevY, currX, currY);
+                  draw(context, color, lineWidth, prevX, prevY, currX, currY);
               }
           }
       }
       init();
-

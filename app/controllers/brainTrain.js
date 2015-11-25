@@ -1,24 +1,24 @@
 var brain = require('brain');
 var fs = require('fs');
 
-
+var trainedBrainData;
 var testDataArray = [];
 
-fs.readFile(process.cwd() + '/assets/mnist_test.csv', function(err, data){
+fs.readFile(process.cwd() + '/assets/mnist_train.csv', function(err, data){
   if(err) {
     throw err;
   } else {
     var csvData = data.toString().split("\n");
-    for(var i = 0; i < 2; i++) {
+    for(var i = 0; i < 59999; i++) {
         
       testDataArray.push(csvData[i].split(','));
-      //console.log(csvData[i].length);
+
       
     }
   trainBrain(testDataArray);
+
   }
 });
-
 
 
 var net = new brain.NeuralNetwork();
@@ -37,13 +37,14 @@ var trainBrain = function(data) {
       testTrainingData.push( { input: pictures, output: output } );
     });
     net.train(testTrainingData);
-    // console.log(net.train(testTrainingData));
     
-    json = net.toJSON();
-    console.log('training')
-    //console.log(json)
-    return json;
-  
+    json = JSON.stringify(net.toJSON());
+    fs.writeFile(process.cwd() + '/assets/trainedBrainData.json', json, function(err){
+      if(err) throw err;
+      console.log('written');
+    } );
+
+    console.log('training');
 }
 
 var trainedNetwork = function(data) {
@@ -52,45 +53,3 @@ var trainedNetwork = function(data) {
 };
 
 exports.trainedNetwork = trainedNetwork;
-// var net = new brain.NeuralNetwork();
-
-// net.train([
-//            {input: [0, 0], output: ['0']},
-//            {input: [0, 1], output: ['10']},
-//            {input: [1, 0], output: ['10']},
-//            {input: [1, 1], output: ['0']},
-//            {input: [1, 0], output: ['10']}
-// ])
-
-// var output = net.run([1,0])
-
-// console.log(output)
-// //---------------------------------------------
-// // Teach it math:
-// //---------------------------------------------
-// var mathNet = new brain.NeuralNetwork();
-
-// mathNet.train([
-//            {input: [-0.2, -0.2], output: [-0.4]},
-//            {input: [-0.3, -0.3], output: [-0.6]},
-//            {input: [-0.4, -0.4], output: [-0.8]},
-//            {input: [-0.0, -0.5], output: [-0.5]},
-//            {input: [-0.1, -0.6], output: [-0.7]},
-//            {input: [-0.5, -0.5], output: [-1]},
-//            {input: [-0.1, -0.1], output: [-0.2]},
-//            {input: [-0.1, -0.3], output: [-0.4]},
-//            {input: [-0.1, -0.7], output: [-0.8]},
-//            {input: [-0.1, -0.8], output: [-0.9]}
-// ], {
-//   errorThresh: 0.00005,  // error threshold to reach
-//   iterations: 20000,   // maximum training iterations
-//   log: true,           // console.log() progress periodically
-//   logPeriod: 10,       // number of iterations between logging
-//   learningRate: 0.3    // learning rate
-// })
-
-// var mathOutput = mathNet.run([-0.1, -0.8])
-
-// console.log(mathOutput)
-
-

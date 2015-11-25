@@ -2,10 +2,16 @@
   "name": "soloweek",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
+  "engines": {
+    "node": "0.12.7",
+    "npm": "1.3.1"
+  },
   "dependencies": {
     "brain": "^0.7.0",
-    "fs": "0.0.2"
+    "fs": "0.0.2",
+    "express": "~4.13.3",
+    "mongodb": "~2.0.49"
   },
   "devDependencies": {},
   "scripts": {

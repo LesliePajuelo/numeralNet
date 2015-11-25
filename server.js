@@ -3,6 +3,7 @@
 var express = require('express');
 var mongo = require('mongodb');
 var routes = require('./app/routes/index.js');
+var bodyParser = require('body-parser');
 
 var app = express();
 
@@ -16,6 +17,8 @@ var app = express();
 
 // });
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use('/public', express.static(process.cwd() + '/public'));
 app.use('/controllers', express.static(process.cwd() + '/app/controllers'));
 

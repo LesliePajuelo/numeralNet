@@ -3,7 +3,7 @@
 var ClickHandler = require(process.cwd() + '/app/controllers/clickHandler.server.js');
 var brainTrain = require(process.cwd() + '/app/controllers/brainTrain.js');
 
-module.exports = function (app, db) {
+module.exports = function (app) {
    // var clickHandler = new ClickHandler(db);
 
    app.route('/')
@@ -12,6 +12,9 @@ module.exports = function (app, db) {
       });
 
    app.route('/trainedNetwork')
-   .post(brainTrain.trainedNetwork);
-      
+   .get(function(req, res){
+    // var data = req.body.data
+     brainTrain.trainedNetwork(req.query.input);
+     // console.log()
+   });
  }

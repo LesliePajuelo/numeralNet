@@ -6,9 +6,9 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Bootstrap 3, from LayoutIt!</title>
+  <title>Neuralminator</title>
 
-  <meta name="author" content="Bowjuelo!">
+  <meta name="Bowjuelo" content="Javascript neural network recognition using MNIST numerals">
 
   <link href="/public/css/bootstrap.min.css" rel="stylesheet">
   <link href="/public/css/style.css" rel="stylesheet">
@@ -27,13 +27,13 @@
           <li>
             <a href="http://lesliepajuelo.com">Leslie's Portfolio Page</a>
           </li>
-          <li class="disabled">
+          <li>
             <a href="https://www.linkedin.com/in/robert-bowie-107300108">Robby's Linkedin</a>
           </li>
         </ul>
         <div class="page-header">
           <h1>
-            RecognizeIT!
+            Neuralminator!
             <span>Recognizing handwritten digits with JavaScript</span>
           </h1>
         </div>
@@ -62,8 +62,9 @@
           <div style="float:left;">
             <input type="button" value="recognize" id="recognize" size="23" onclick="recognize()">
           </div>
+          <!--this is button has an id, and that's it-->
           <div style="float:left;">
-            <input type="button" value="trainedNetwork" id="trainedNetwork" size="23" onclick="trainedNetwork()">
+            <input type="button" id="trainedNetwork" value="trainedNetwork">
           </div>
           <div id="nnInput"></div>
         </div>
@@ -74,6 +75,7 @@
     <script src="/controllers/jquery.min.js"></script>
     <script src="/controllers/bootstrap.min.js"></script>
     <!--<script src="/controllers/brainTrain.js"></script>-->
+    <!--Robby, we link our client side js-->
     <script src="/controllers/scripts.js"></script>
 
 </body>

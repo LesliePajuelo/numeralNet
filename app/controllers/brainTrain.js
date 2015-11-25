@@ -4,7 +4,7 @@ var fs = require('fs');
 
 var testDataArray = [];
 
-fs.readFile(__dirname + '/../assets/mnist_test.csv', function(err, data){
+fs.readFile(process.cwd() + '/assets/mnist_test.csv', function(err, data){
   if(err) {
     throw err;
   } else {
@@ -29,7 +29,7 @@ var testData = function(data) {
     var pictures;
     var testTrainingData = [];
     data.forEach(function(arr) {
-      //setting lables as index flags in output array
+      //setting lables as index flags in output y
       var output = Array.apply(null, Array(10)).map(Number.prototype.valueOf, 0); 
       labels = parseInt(arr.shift())
       output[labels] = 1;
@@ -46,10 +46,12 @@ var testData = function(data) {
 }
 
 var trainedNetwork = function() {
-  console.log(net.run(output));
+  console.log('trained  brain train')
+  //console.log(net.run(output));
 };
 
-
+//Robby
+exports.trainedNetwork = trainedNetwork;
 // var net = new brain.NeuralNetwork();
 
 // net.train([

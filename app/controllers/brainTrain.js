@@ -15,14 +15,14 @@ fs.readFile(process.cwd() + '/assets/mnist_test.csv', function(err, data){
       //console.log(csvData[i].length);
       
     }
-  testData(testDataArray);
+  trainBrain(testDataArray);
   }
 });
 
 
 
 var net = new brain.NeuralNetwork();
-var testData = function(data) {
+var trainBrain = function(data) {
 
     var labels;
     var pictures;
@@ -47,7 +47,7 @@ var testData = function(data) {
 }
 
 var trainedNetwork = function(data) {
-  console.log('trained brain train')
+  console.log('Comparing data on trained brain')
   console.log(net.run(data));
 };
 

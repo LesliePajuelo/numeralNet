@@ -7,5 +7,7 @@ node_modules/
 tmp
 vendor/
 
+assets/trainedBrainData.json
+
 !/home/leslie/Desktop/soloWeek/assets/mnist_train.csv
 !/home/leslie/Desktop/soloWeek/assets/mnist_test.csv

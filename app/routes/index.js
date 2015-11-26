@@ -4,17 +4,26 @@ var ClickHandler = require(process.cwd() + '/app/controllers/clickHandler.server
 var brainTrain = require(process.cwd() + '/app/controllers/brainTrain.js');
 
 module.exports = function (app) {
-   // var clickHandler = new ClickHandler(db);
+  // var clickHandler = new ClickHandler(db);
 
    app.route('/')
       .get(function (req, res) {
-         res.sendFile(process.cwd() + '/public/index.html');
+        res.sendFile(process.cwd() + '/public/index.html');
       });
 
    app.route('/trainedNetwork')
-   .get(function(req, res){
-    // var data = req.body.data
-     brainTrain.trainedNetwork(req.query.input);
-     // console.log()
+    .post(function(req, res){
+      // var data = req.body.data
+      //console.log(req.body['input[]'])
+      brainTrain.trainedNetwork(req.body['input[]'], function(data) {
+        console.log('CB success! Data sent: ', data);
+        res.send(data);
+      });
+
+
+      //console.log(req)
+
+      // We should respond with the result of the call to
+      // trainedNetwork (assuming the result is the array of 10)
    });
- }
+};

@@ -1,1 +1,28 @@
-# Empty CSS file for your own CSS
+#results{
+  height: 280px;
+  width: 500px;
+  float: left;
+  font-size: 1.25em;
+}
+
+#canvas {
+  width: 280px;
+  height: 280px;
+  float: left;
+  margin-right: 30px;
+}
+
+.digit{
+  font-size: 2.5em;
+}
+
+.page-header {
+  margin:0px;
+}
+.percent{
+  font-size: 2em;
+}
+
+.subHeader {
+  font-size: 1.75em;
+}

@@ -183,19 +183,56 @@ function recognize() {
   var maxIndex = 0;
   //var nnOutput = nn(nnInput, w12, bias2, w23, bias3)
   //nnOutput.reduce(function(p,c,i){if(p<c) {maxIndex=i; return c;} else return p;});
-  console.log('maxIndex: '+maxIndex);
  // document.getElementById('nnOut').innerHTML=maxIndex;
   clearBeforeDraw = true;
   var dt = new Date() - t1;
 
   console.log('recognize time: '+dt+'ms');
-  console.log('nnInput: ', nnInput);
-  (function(){
+
+  function renderResults(data) {
+    function topTwo (data) {
+      var index;
+      var max;
+      var highestProbs = [];
+
+      function topOne(data) {
+        index = data.indexOf(Math.max.apply(null, data));
+        max = Math.max.apply(null, data);
+        data.splice(index, 1, 0);
+        
+        return [index, (max*100).toPrecision(3) + '%'];
+      };
+
+      highestProbs.push(topOne(data));
+      highestProbs.push(topOne(data));
+
+      return highestProbs;
+    };
+
+    var highestProbs = topTwo(data)
+    //[ [ 8, 1 ], [ 10, 0.99 ] ]
+
+   var formattedData = '<p>Your number: <span class="digit">'+ highestProbs[0][0] + 
+                       '</span> confidence: <span class="percent">' + 
+                       highestProbs[0][1] + '</span></p> \n' +
+                       '<p>Second possibility: <span class="digit">'+ 
+                       highestProbs[1][0] + '</span> confidence: ' + 
+                       '<span class="percent">' + highestProbs[1][1] +
+                       '</span></p>';
+
+    $('#results').html(formattedData).show;
+  }
+
+
+  (function() {
     $.ajax({
-      type: 'GET', 
+      type: 'POST', 
       url:'/trainedNetwork',
       data: {
         input: nnInput
+      },
+      success: function(data){
+        renderResults(data)
       }
     })
   })();
@@ -254,7 +291,7 @@ function findxy(res, e) {
 }
   if (res == 'up' || res == "out") {
       paintFlag = false;
-      //console.log(paths);
+     
   }
 
 if (res == 'move') {
@@ -281,4 +318,5 @@ if (res == 'move') {
     }
 }
 }
+
 init();

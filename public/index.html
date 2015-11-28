@@ -40,7 +40,7 @@
           <p>The goal of this project was to gain familiarity with and exposure to javascripts' take
           on neural networking.</p>
           <p>Technologies we used are Node for the heavy lifting. Express for our routing and server architecture. Plain old javascript and jQuery for everything else.</p>
-          <p>We've created a trained neural network, to _______ accuracy. It takes what you draw on the canvas and it calculates a confidence rating that the drawn number matches a digit between 0-9. It does this after being trained on 60,000 handwritten digits from the <a href="https://en.wikipedia.org/wiki/MNIST_database">MNIST data set</a>.</p>
+          <p>We've created a trained neural network, to a 0.02 error rate. It takes what you draw on the canvas and it calculates a confidence rating that the drawn number matches a digit between 0-9. It does this after being trained on 60,000 handwritten digits from the <a href="https://en.wikipedia.org/wiki/MNIST_database">MNIST data set</a>.</p>
           <br>
         </div>
       </div>
@@ -65,7 +65,29 @@
         </div>
       </div>
       <div class="row">
-        
+        <div class="col-md-12">
+          <div class="subHeader">More about the brain</div>
+          <p>If you've drawn digits in the box and tested you can see that the accuracy is very
+          dependent on how the digit is drawn. The discrepancy is that while our network is 
+          well trained with an error rate of 0.02,that error rate is against data it has trained on.
+          <img src="public/img/brain_v4_training_results.png" alt="Terminal readout showing a \
+          final training error of0.023 in 10,783 seconds " class="img-rounded">
+
+          <p>Below is a sampling of what the MNIST data looks like for each digit. As you can see
+          there is large variations on what our neural network considers a specific digit.</p>
+          <p>Some of these numbers, such as the last seven looks to the human eye a lot an awful lot
+          like the 6th one for example</p>
+          <img src="public/img/mnist_digit_sample.png" alt="Terminal readout showing a \
+          final training error of0.023 in 10,783 seconds " class="img-rounded">
+          <p>Part of the inaccuracies stem from the differences between how a digit is drawn 
+          compared to what our network is expecting. The other part is that the drawing area is 
+          translated to an array which represents the data in a form similar but not precisely matching
+          the MNIST data</p>
+          <p>The last part of the explanation for the inaccuracies is that a good neural network
+          needs to be tuned to the data it expects to recieve. This fine tuning has not been done
+          on this network so the weights and balances for each digit can be improved</p>
+        </div>
+        <div class="col-md-4"></div>
       </div>
       <div style="margin-bottom:10px;"></div>
       <script src="public/lib/jquery.min.js"></script>

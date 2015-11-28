@@ -27,8 +27,15 @@
 
 .subHeader {
   font-size: 1.75em;
+  margin-top: 50px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #eee;
 }
 
 canvas {
   visibility: hidden;
+}
+
+img {
+  margin: 10px;
 }

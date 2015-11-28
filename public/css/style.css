@@ -1,4 +1,4 @@
-#results{
+#results {
   height: 280px;
   width: 500px;
   float: left;
@@ -10,19 +10,24 @@
   height: 280px;
   float: left;
   margin-right: 30px;
+  visibility: visible;
 }
 
-.digit{
+.digit {
   font-size: 2.5em;
 }
 
 .page-header {
   margin:0px;
 }
-.percent{
+.percent {
   font-size: 2em;
 }
 
 .subHeader {
   font-size: 1.75em;
+}
+
+canvas {
+  visibility: hidden;
 }

@@ -1,61 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Numeral Net</title>
+    <title>Numeral Net</title>
 
-  <meta name="Robert Bowie and Leslie Pajuelo" content="Javascript neural network recognition using MNIST numerals">
+    <meta name="Robert Bowie and Leslie Pajuelo" content="Javascript neural network recognition using MNIST numerals">
 
-  <link href="/public/css/bootstrap.min.css" rel="stylesheet">
-  <link href="/public/css/style.css" rel="stylesheet">
+    <link href="/public/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/public/css/style.css" rel="stylesheet">
 
-</head>
+  </head>
 
-<body>
+  <body>
 
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-md-12">
-        <ul class="nav nav-pills">
-          <li>
-            <a target="_blank" href="http://lesliepajuelo.com">Leslie Pajuelo</a>
-          </li>
-          <li>
-            <a target="_blank" href="http://www.RobertJBowie.com">Robby Bowie</a>
-          </li>
-        </ul>
-        <div class="page-header">
-          <h1>
-            Numeral Net!
-          </h1>
-          <span class="subHeader">Recognizing handwritten digits with JavaScript</span>
-        </div>
-        <p>
-          Welcome to Numeral Net, a side-project, taken on by two Hack Rector students
-          during solo week, built using <a href="https://github.com/harthur/brain">BrainJS</a> a javascript neural network library.
-        </p>
-        <p>The goal of this project was to gain familiarity with and exposure to javascripts' take
-        on neural networking.</p>
-        <p>Technologies we used are Node for the heavy lifting. Express for our routing and server architecture. Plain old javascript and jQuery for everything else.</p>
-        <p>We've created a trained neural network, to _______ accuracy. It takes what you draw on the canvas and it calculates a confidence rating that the drawn number matches a digit between 0-9. It does this after being trained on 60,000 handwritten digits from the <a href="https://en.wikipedia.org/wiki/MNIST_database">MNIST data set</a>.</p>
-        <br>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-12">
+          <ul class="nav nav-pills">
+            <li>
+              <a target="_blank" href="http://lesliepajuelo.com">Leslie Pajuelo</a>
+            </li>
+            <li>
+              <a target="_blank" href="http://www.RobertJBowie.com">Robby Bowie</a>
+            </li>
+          </ul>
+          <div class="page-header">
+            <h1>
+              Numeral Net!
+            </h1>
+            <span class="subHeader">Recognizing handwritten digits with JavaScript</span>
+          </div>
+          <p>
+            Welcome to Numeral Net, a side-project, taken on by two Hack Rector students
+            during solo week, built using <a href="https://github.com/harthur/brain">BrainJS</a> a javascript neural network library.</p>
+          <p>The goal of this project was to gain familiarity with and exposure to javascripts' take
+          on neural networking.</p>
+          <p>Technologies we used are Node for the heavy lifting. Express for our routing and server architecture. Plain old javascript and jQuery for everything else.</p>
+          <p>We've created a trained neural network, to _______ accuracy. It takes what you draw on the canvas and it calculates a confidence rating that the drawn number matches a digit between 0-9. It does this after being trained on 60,000 handwritten digits from the <a href="https://en.wikipedia.org/wiki/MNIST_database">MNIST data set</a>.</p>
+          <br>
         </div>
       </div>
       <div class="container">
-      <div class="row">
-        <div>
-          <canvas id="canvas" width="280" height="280" style="top:10%;left:10%;border:2px solid;"></canvas>
+        <div class="row">
+          <div>
+            <canvas id="canvas" width="280" height="280" style="top:10%;left:10%;border:2px solid;"></canvas>
+          </div>
+          <div id='results' class="col-md-4">RESULTS</div>
         </div>
-        <div id='results' class="col-md-4">RESULTS</div>
       </div>
-      </div>
-        <div>
-          <div id="nnInput"></div>
-          <div style="float:left;font-size:200px;margin-left:80px;" id="nnOut"></div>
+      <div>
+        <div id="nnInput"></div>
+        <div style="float:left;font-size:200px;margin-left:80px;" id="nnOut"></div>
         <div class="container">
           <div style="padding-bottom:5px;">
             <input type="checkbox" id="preprocessing" checked="true">
@@ -74,12 +73,11 @@
           </div>
         </div>
       </div>
-    <div style="margin-bottom:10px;"></div>
-    <script src="/controllers/jquery.min.js"></script>
-    <script src="/controllers/bootstrap.min.js"></script>
-    <!--<script src="/controllers/scripts.js"></script>-->
-    <script src="/controllers/imageTesting.js"></script>
+      <div style="margin-bottom:10px;"></div>
+      <script src="/controllers/jquery.min.js"></script>
+      <script src="/controllers/bootstrap.min.js"></script>
+      <script src="/controllers/imageTesting.js"></script>
 
-</body>
+  </body>
 
 </html>

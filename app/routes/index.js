@@ -1,6 +1,5 @@
 'use strict';
 
-var ClickHandler = require(process.cwd() + '/app/controllers/clickHandler.server.js');
 var brainTrain = require(process.cwd() + '/app/controllers/brainTrain.js');
 var brainTrain = require(process.cwd() + '/app/controllers/trainedNetwork.js');
 

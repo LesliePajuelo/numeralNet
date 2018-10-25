@@ -1,2 +1,12 @@
 //ignore node modules
+#*
+*.o
+*.pyc
+*~
+extern/
 node_modules/
+tmp
+vendor/
+
+assets/trainedBrainData.json
+

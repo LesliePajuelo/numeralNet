@@ -5,3 +5,9 @@ Welcome to Numeral Net, a side-project, taken on by two Hack Rector students
           on neural networking.
           Technologies we used are Node for the heavy lifting. Express for our routing and server architecture. Plain old javascript and jQuery for everything else.
          We've created a trained neural network, to a 0.02 error rate. It takes what you draw on the canvas and it calculates a confidence rating that the drawn number matches a digit between 0-9. It does this after being trained on 60,000 handwritten digits from the <a href="https://en.wikipedia.org/wiki/MNIST_database">MNIST data set</a>.
+# Instructions
+Install node.js version v0.12.7 and npm@1.3.1.
+```
+npm install
+npm start
+```

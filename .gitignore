@@ -1,3 +1,4 @@
+//ignore node modules
 #*
 *.o
 *.pyc
@@ -8,3 +9,4 @@ tmp
 vendor/
 
 assets/trainedBrainData.json
+

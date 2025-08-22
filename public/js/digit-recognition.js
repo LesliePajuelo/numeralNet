@@ -170,6 +170,8 @@ var recognize = function() {
     if (normalizedValues.length !== 784) {
       throw new Error('Input array length mismatch. Expected 784, got ' + normalizedValues.length);
     }
+
+    // TODO RUPA/LP swap out this function! 
     var networkOutput = trainedNetwork.run(normalizedValues);
     renderResults(networkOutput);
   } catch (error) {
@@ -183,7 +185,7 @@ var recognize = function() {
 //-----------------------------------------------------------------------
 
 function loadTrainedNetwork() {
-  // Load the pre-trained neural network data
+// TODO RUPA/LP swap out this file. 
   fetch('fourthBrainData.json')
     .then(response => {
       if (!response.ok) {
@@ -194,10 +196,10 @@ function loadTrainedNetwork() {
     .then(data => {
       console.log('Loaded neural network data:', data);
       
-      // Create a new neural network instance using our custom implementation
+      // TODO RUPA/LP swap out this function!
+
       trainedNetwork = new NeuralNetwork();
       
-      // Load the trained network data (compatible with existing format)
       trainedNetwork.fromJSON(data);
       
       console.log('Neural network loaded successfully');

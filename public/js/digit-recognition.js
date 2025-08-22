@@ -160,6 +160,8 @@ var recognize = function() {
     normalizedValues.push(normalized);
   }
 
+  // Clean up the temporary canvas (it was never added to DOM, so no need to remove)
+  shadowCanvas = null;
 
   // Process with neural network
   try {
@@ -192,9 +194,10 @@ function loadTrainedNetwork() {
     .then(data => {
       console.log('Loaded neural network data:', data);
       
+      // Create a new neural network instance using our custom implementation
       trainedNetwork = new NeuralNetwork();
       
-      // Load the trained weights and biases
+      // Load the trained network data (compatible with existing format)
       trainedNetwork.fromJSON(data);
       
       console.log('Neural network loaded successfully');

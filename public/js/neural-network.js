@@ -318,11 +318,18 @@ NeuralNetwork.prototype.toJSON = function() {
  * using the run() method, without needing to retrain.
  */
 NeuralNetwork.prototype.fromJSON = function(json) {
+  // Check if this is the existing trained network format
+  if (json.layers && Array.isArray(json.layers)) {
+    this._loadFromTrainedFormat(json);
+  } else {
+    // Our custom format
     this.inputSize = json.inputSize;
     this.outputSize = json.outputSize;
     this.hiddenLayers = json.hiddenLayers;
     this.weights = json.weights;
     this.biases = json.biases;
+  }
+};
 
 /**
  * Load network from the existing trained network format.

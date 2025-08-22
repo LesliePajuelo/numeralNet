@@ -167,7 +167,8 @@ var recognize = function() {
 //-----------------------------------------------------------------------
 
 function loadTrainedNetwork() {
-  // Try to load the pre-trained network from the assets
+  // TODO RUPA LP change to new trained network which is created and trained locally,
+  // Not in the browser.
   fetch('assets/fourthBrainData.json')
     .then(response => {
       if (!response.ok) {
@@ -198,10 +199,8 @@ function loadTrainedNetwork() {
 $(document).ready(function() {
   console.log('NumeralNet initialized');
   
-  // Load the pre-trained neural network
   loadTrainedNetwork();
   
-  // Set up canvas event listeners
   $('#canvas').on('mousedown mousemove mouseup mouseleave', function(e) {
     e.preventDefault();
   });

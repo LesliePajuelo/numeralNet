@@ -186,7 +186,7 @@ var recognize = function() {
 
 function loadTrainedNetwork() {
 // TODO RUPA/LP swap out this file. 
-  fetch('testBrainData.json')
+  fetch('./test.json')
     .then(response => {
       if (!response.ok) {
         throw new Error('Failed to load neural network data');

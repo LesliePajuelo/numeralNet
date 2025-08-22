@@ -1,5 +1,13 @@
+//------------------------------------------------------------------------------
+// Client-Side Digit Recognition for GitHub Pages
+// Handles canvas drawing and neural network processing
+//------------------------------------------------------------------------------
+
+// Global variables for canvas and neural network
 var canvas = document.getElementById('canvas');
 var context = canvas.getContext('2d');
+var trainedNetwork = null;
+
 //-----------------------------------------------------------------------
 // Utility Functions:
 //-----------------------------------------------------------------------
@@ -83,9 +91,9 @@ var addClick = function(x,y,dragging) {
 
 var redraw = function() {
   context.clearRect(0,0, canvas.width, canvas.height);
-  context.strokeStyle ="#000000";  // Change to black for better MNIST compatibility
+  context.strokeStyle ="#ff0000";
   context.lineJoin = "round";
-  context.lineWidth = 8;  // Reduce from 13 to 8 for better scaling
+  context.lineWidth = 13;
 
   for(var i = 0; i < clickX.length; i++){
     
@@ -106,45 +114,24 @@ var redraw = function() {
 //-----------------------------------------------------------------------
 
 var recognize = function() {
+  if (!trainedNetwork) {
+    $('#results').html('<p>Error: Neural network not loaded. Please wait...</p>');
+    return;
+  }
+
   var image = context.getImageData(0,0,canvas.width, canvas.height);
   var shadowCanvas = document.createElement('canvas');
   var shadowContext = shadowCanvas.getContext('2d');
   shadowCanvas.width = 28;
   shadowCanvas.height = 28;
 
-  // Clear the shadow canvas with white background
+  // Clear the shadow canvas first
   shadowContext.fillStyle = 'white';
   shadowContext.fillRect(0, 0, 28, 28);
   
-  // Find the bounding box of the drawn content
-  var minX = 280, minY = 280, maxX = 0, maxY = 0;
-  for (var i = 0; i < clickX.length; i++) {
-    minX = Math.min(minX, clickX[i]);
-    maxX = Math.max(maxX, clickX[i]);
-    minY = Math.min(minY, clickY[i]);
-    maxY = Math.max(maxY, clickY[i]);
-  }
-  
-  // Calculate the center of the drawn content
-  var centerX = (minX + maxX) / 2;
-  var centerY = (minY + maxY) / 2;
-  
-  // Calculate the size of the drawn content
-  var contentWidth = maxX - minX;
-  var contentHeight = maxY - minY;
-  
-  // Scale factor to fit content in 28x28 (with some padding)
-  var scale = Math.min(20 / contentWidth, 20 / contentHeight);
-  
-  // Calculate offset to center the content
-  var offsetX = 14 - (centerX * scale);
-  var offsetY = 14 - (centerY * scale);
-  
-  // Draw the canvas content onto the shadow canvas with proper centering and scaling
-  shadowContext.drawImage(canvas, 
-    minX, minY, contentWidth, contentHeight,  // Source rectangle
-    offsetX, offsetY, contentWidth * scale, contentHeight * scale  // Destination rectangle
-  );
+  // Draw the canvas content onto the shadow canvas, properly scaled
+  // This creates a 28x28 version of what was drawn
+  shadowContext.drawImage(canvas, 0, 0, 280, 280, 0, 0, 28, 28);
   
   // Get the image data from the 28x28 canvas
   var teeny = shadowContext.getImageData(0, 0, shadowCanvas.width, shadowCanvas.height);
@@ -159,66 +146,64 @@ var recognize = function() {
     // Invert and normalize: white background becomes 0, black digits become 1
     // This matches MNIST format where digits are white on black background
     var normalized = (255 - gray) / 255;
-    
-    // Apply threshold to make it more binary-like (MNIST style)
-    if (normalized > 0.1) {
-      normalized = 1.0;
-    } else {
-      normalized = 0.0;
-    }
-    
     normalizedValues.push(normalized);
   }
 
-  // Debug: Log the input data
-  console.log('Input data length:', normalizedValues.length);
-  console.log('First 10 values:', normalizedValues.slice(0, 10));
-  console.log('Non-zero values count:', normalizedValues.filter(x => x > 0).length);
-  console.log('Bounding box:', {minX, minY, maxX, maxY});
-  console.log('Scale factor:', scale);
-  console.log('Offset:', {offsetX, offsetY});
-  
-  // Create a visual representation of the 28x28 input
-  var debugCanvas = document.createElement('canvas');
-  debugCanvas.width = 140; // 5x scale for visibility
-  debugCanvas.height = 140;
-  var debugCtx = debugCanvas.getContext('2d');
-  
-  for (var y = 0; y < 28; y++) {
-    for (var x = 0; x < 28; x++) {
-      var idx = y * 28 + x;
-      var value = normalizedValues[idx];
-      var color = value > 0 ? 'black' : 'white';
-      debugCtx.fillStyle = color;
-      debugCtx.fillRect(x * 5, y * 5, 5, 5);
-    }
-  }
-  
-  // Add debug info to the page
-  var debugDiv = document.getElementById('debug-info') || document.createElement('div');
-  debugDiv.id = 'debug-info';
-  debugDiv.innerHTML = '<h4>Debug: 28x28 Input</h4>';
-  debugDiv.appendChild(debugCanvas);
-  debugDiv.style.marginTop = '20px';
-  debugDiv.style.border = '1px solid #ccc';
-  debugDiv.style.padding = '10px';
-  
-  if (!document.getElementById('debug-info')) {
-    document.body.appendChild(debugDiv);
-  }
+  // Remove the temporary canvas
+  document.body.removeChild(shadowCanvas);
 
-  // Query server-side neural network:
-  (function() {
-    $.ajax({
-      type: 'POST', 
-      url:'/trainedNetwork',
-      data: {
-        input: normalizedValues
-      },
-      success: function(data){
-        renderResults(data)
-      }
-    })
-  })();
-
+  // Process with neural network
+  try {
+    var networkOutput = trainedNetwork.run(normalizedValues);
+    renderResults(networkOutput);
+  } catch (error) {
+    console.error('Error running neural network:', error);
+    $('#results').html('<p>Error: Failed to process image</p>');
+  }
 };
+
+//-----------------------------------------------------------------------
+// Load pre-trained neural network:
+//-----------------------------------------------------------------------
+
+function loadTrainedNetwork() {
+  // Try to load the pre-trained network from the assets
+  fetch('assets/fourthBrainData.json')
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Failed to load neural network data');
+      }
+      return response.json();
+    })
+    .then(data => {
+      // Create a new neural network instance
+      trainedNetwork = new NeuralNetwork();
+      
+      // Load the trained weights and biases
+      trainedNetwork.fromJSON(data);
+      
+      console.log('Neural network loaded successfully');
+      $('#results').html('<p>Neural network ready! Draw a digit and click recognize.</p>');
+    })
+    .catch(error => {
+      console.error('Error loading neural network:', error);
+      $('#results').html('<p>Error: Could not load neural network. Please refresh the page.</p>');
+    });
+}
+
+//-----------------------------------------------------------------------
+// Initialize when page loads:
+//-----------------------------------------------------------------------
+
+$(document).ready(function() {
+  console.log('NumeralNet initialized');
+  
+  // Load the pre-trained neural network
+  loadTrainedNetwork();
+  
+  // Set up canvas event listeners
+  $('#canvas').on('mousedown mousemove mouseup mouseleave', function(e) {
+    e.preventDefault();
+  });
+});
+

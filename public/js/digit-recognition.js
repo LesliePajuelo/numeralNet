@@ -185,6 +185,7 @@ var recognize = function() {
 //-----------------------------------------------------------------------
 
 function loadTrainedNetwork() {
+  console.log('Loading neural network - Version 5');
 // TODO RUPA/LP swap out this file. 
   fetch('./test.json')
     .then(response => {
@@ -219,7 +220,7 @@ function loadTrainedNetwork() {
 //-----------------------------------------------------------------------
 
 $(document).ready(function() {
-  console.log('NumeralNet initialized');
+  console.log('NumeralNet initialized - Version 5');
   
   // Initialize canvas after DOM is loaded
   canvas = document.getElementById('canvas');

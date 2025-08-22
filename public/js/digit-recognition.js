@@ -4,8 +4,8 @@
 //------------------------------------------------------------------------------
 
 // Global variables for canvas and neural network
-var canvas = document.getElementById('canvas');
-var context = canvas.getContext('2d');
+var canvas;
+var context;
 var trainedNetwork = null;
 
 //-----------------------------------------------------------------------
@@ -60,6 +60,7 @@ var clickDrag = new Array();
 var paint;
 
 $('#canvas').mousedown(function(e) {
+  console.log('Mouse down event triggered');
   var mouseX = e.pageX - this.offsetLeft;
   var mouseY = e.pageY - this.offsetTop;
     
@@ -118,10 +119,16 @@ var recognize = function() {
     $('#results').html('<p>Error: Neural network not loaded. Please wait...</p>');
     return;
   }
+  
+  console.log('Canvas click data:', clickX.length, 'clicks');
+  if (clickX.length === 0) {
+    $('#results').html('<p>Please draw a digit first!</p>');
+    return;
+  }
 
   var image = context.getImageData(0,0,canvas.width, canvas.height);
   var shadowCanvas = document.createElement('canvas');
-  var shadowContext = shadowCanvas.getContext('2d');
+  var shadowContext = shadowCanvas.getContext('2d', { willReadFrequently: true });
   shadowCanvas.width = 28;
   shadowCanvas.height = 28;
 
@@ -131,15 +138,19 @@ var recognize = function() {
   
   // Draw the canvas content onto the shadow canvas, properly scaled
   // This creates a 28x28 version of what was drawn
-  shadowContext.drawImage(canvas, 0, 0, 280, 280, 0, 0, 28, 28);
+  shadowContext.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, 28, 28);
   
   // Get the image data from the 28x28 canvas
   var teeny = shadowContext.getImageData(0, 0, shadowCanvas.width, shadowCanvas.height);
+  
+  console.log('Canvas dimensions:', shadowCanvas.width, 'x', shadowCanvas.height);
+  console.log('Image data length:', teeny.data.length);
+  console.log('Expected data length:', shadowCanvas.width * shadowCanvas.height * 4);
 
   // Convert to grayscale and normalize to 0-1 range (MNIST format)
   // MNIST uses white background (255) and black digits (0), so we invert
   var normalizedValues = [];
-  for(var i = 0; i < teeny.data.length; i = i + 4) {
+  for(var i = 0; i < teeny.data.length; i += 4) {
     // Convert RGB to grayscale: 0.299*R + 0.587*G + 0.114*B
     var gray = 0.299 * teeny.data[i] + 0.587 * teeny.data[i+1] + 0.114 * teeny.data[i+2];
     
@@ -149,11 +160,14 @@ var recognize = function() {
     normalizedValues.push(normalized);
   }
 
-  // Remove the temporary canvas
-  document.body.removeChild(shadowCanvas);
 
   // Process with neural network
   try {
+    console.log('Input array length:', normalizedValues.length);
+    console.log('Expected length: 784 (28x28)');
+    if (normalizedValues.length !== 784) {
+      throw new Error('Input array length mismatch. Expected 784, got ' + normalizedValues.length);
+    }
     var networkOutput = trainedNetwork.run(normalizedValues);
     renderResults(networkOutput);
   } catch (error) {
@@ -167,9 +181,8 @@ var recognize = function() {
 //-----------------------------------------------------------------------
 
 function loadTrainedNetwork() {
-  // TODO RUPA LP change to new trained network which is created and trained locally,
-  // Not in the browser.
-  fetch('assets/fourthBrainData.json')
+  // Load the pre-trained neural network data
+  fetch('fourthBrainData.json')
     .then(response => {
       if (!response.ok) {
         throw new Error('Failed to load neural network data');
@@ -177,13 +190,17 @@ function loadTrainedNetwork() {
       return response.json();
     })
     .then(data => {
-      // Create a new neural network instance
+      console.log('Loaded neural network data:', data);
+      
       trainedNetwork = new NeuralNetwork();
       
       // Load the trained weights and biases
       trainedNetwork.fromJSON(data);
       
       console.log('Neural network loaded successfully');
+      console.log('Input size:', trainedNetwork.inputSize);
+      console.log('Output size:', trainedNetwork.outputSize);
+      console.log('Hidden layers:', trainedNetwork.hiddenLayers);
       $('#results').html('<p>Neural network ready! Draw a digit and click recognize.</p>');
     })
     .catch(error => {
@@ -198,6 +215,20 @@ function loadTrainedNetwork() {
 
 $(document).ready(function() {
   console.log('NumeralNet initialized');
+  
+  // Initialize canvas after DOM is loaded
+  canvas = document.getElementById('canvas');
+  if (!canvas) {
+    console.error('Canvas element not found!');
+    return;
+  }
+  context = canvas.getContext('2d', { willReadFrequently: true });
+  if (!context) {
+    console.error('Could not get canvas context!');
+    return;
+  }
+  
+  console.log('Canvas initialized:', canvas.width, 'x', canvas.height);
   
   loadTrainedNetwork();
   

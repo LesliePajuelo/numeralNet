@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 // Client-Side Neural Network Implementation for GitHub Pages
-// Based on the brainUtilities.js implementation
+// Custom neural network implementation
 //------------------------------------------------------------------------------
 
 /**
@@ -311,17 +311,87 @@ NeuralNetwork.prototype.toJSON = function() {
 /**
  * Load a network from JSON format.
  *
- * This method reconstructs a neural network from a JSON representation
- * created by toJSON(). It restores both the network architecture
- * (layer sizes) and the learned parameters (weights and biases).
+ * This method reconstructs a neural network from a JSON representation.
+ * It supports our custom format and the existing trained network format.
  *
  * After calling this method, the network is ready to make predictions
  * using the run() method, without needing to retrain.
  */
 NeuralNetwork.prototype.fromJSON = function(json) {
-  this.inputSize = json.inputSize;
-  this.outputSize = json.outputSize;
-  this.hiddenLayers = json.hiddenLayers;
-  this.weights = json.weights;       // Restore learned weights
-  this.biases = json.biases;         // Restore learned biases
+    this.inputSize = json.inputSize;
+    this.outputSize = json.outputSize;
+    this.hiddenLayers = json.hiddenLayers;
+    this.weights = json.weights;
+    this.biases = json.biases;
+
+/**
+ * Load network from the existing trained network format.
+ * 
+ * The trained network format has:
+ * - layers: array of layer objects
+ * - Each layer has neurons numbered as strings
+ * - Each neuron has bias and weights properties
+ * - Weights map from input neuron index to weight value
+ */
+NeuralNetwork.prototype._loadFromTrainedFormat = function(json) {
+  var layers = json.layers;
+  
+  // Determine network architecture from layers
+  this.inputSize = Object.keys(layers[0]).length;  // First layer size
+  this.outputSize = Object.keys(layers[layers.length - 1]).length;  // Last layer size
+  
+  // Hidden layers (all layers except first and last)
+  this.hiddenLayers = [];
+  for (var i = 1; i < layers.length - 1; i++) {
+    this.hiddenLayers.push(Object.keys(layers[i]).length);
+  }
+  
+  // Initialize the network structure
+  this._initialize();
+  
+  // Convert the trained network weights and biases to our format
+  this._convertTrainedWeights(layers);
+};
+
+/**
+ * Convert the trained network weights and biases to our internal format.
+ */
+NeuralNetwork.prototype._convertTrainedWeights = function(layers) {
+  // Clear existing weights and biases
+  this.weights = [];
+  this.biases = [];
+  
+  // Process each layer transition
+  for (var i = 0; i < layers.length - 1; i++) {
+    var currentLayer = layers[i];
+    var nextLayer = layers[i + 1];
+    
+    var currentLayerSize = Object.keys(currentLayer).length;
+    var nextLayerSize = Object.keys(nextLayer).length;
+    
+    // Initialize weight matrix for this transition
+    var weightMatrix = [];
+    var biasVector = [];
+    
+    // For each neuron in the next layer
+    for (var j = 0; j < nextLayerSize; j++) {
+      var neuronKey = j.toString();
+      var neuron = nextLayer[neuronKey];
+      
+      // Add bias
+      biasVector.push(neuron.bias);
+      
+      // Add weights
+      var weightRow = [];
+      for (var k = 0; k < currentLayerSize; k++) {
+        var inputKey = k.toString();
+        var weight = neuron.weights[inputKey] || 0;
+        weightRow.push(weight);
+      }
+      weightMatrix.push(weightRow);
+    }
+    
+    this.weights.push(weightMatrix);
+    this.biases.push(biasVector);
+  }
 };
